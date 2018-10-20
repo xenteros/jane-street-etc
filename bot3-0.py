@@ -17,7 +17,7 @@ import time
 team_name="CZADOWECHLOPAKI"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = True
+test_mode = False
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -50,12 +50,12 @@ SELLS = {}  #sells from book
 buy_requests = {}
 sell_requests = {}
 
-def earn_on_bonds():
-    bonds = portfolio["BOND"] + buy_requests["BONDS"]
+def earn_on_bonds(exchange):
+    bonds = PORTFOLIO["BOND"] + buy_requests["BOND"]
     if bonds < 100:
         buy(exchange, 999, 100-bonds, "BOND")
     
-    bonds = portfolio["BOND"] - sell_requests["BONDS"]
+    bonds = PORTFOLIO["BOND"] - sell_requests["BOND"]
     if bonds > -100:
         sell(exchange, 1001, 100+bonds, "BOND")
 
@@ -146,13 +146,6 @@ def main():
         SELLS[symbol['symbol']] = []
         buy_requests[symbol['symbol']] = 0
         sell_requests[symbol['symbol']] = 0
-        
-    buy(exchange, 999, 40, "BOND")
-    buy(exchange, 998, 40, "BOND")
-    buy(exchange, 997, 20, "BOND")
-    sell(exchange, 1001, 40, "BOND")
-    sell(exchange, 1002, 40, "BOND")
-    sell(exchange, 1003, 20, "BOND")
     #go!
     while(True):
         response = read_from_exchange(exchange)
@@ -163,7 +156,7 @@ def main():
             SELLS[symbol] = response["sell"]
 #            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
             arbitrage_ADR(exchange)
-            earn_on_bonds()
+            earn_on_bonds(exchange)
         elif response["type"] == "fill":
             print("RESPONSE: ", response)
             print("PORTFOLIO:",PORTFOLIO)
