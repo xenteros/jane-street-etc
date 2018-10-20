@@ -161,6 +161,7 @@ def main():
             symbol = response["symbol"]
             dir = response["dir"]
             size = response["size"]
+            print("SOLD:     ", symbol, size)
             if dir == "BUY":
                 pass
                 buy_requests[symbol] = buy_requests[symbol] - size
