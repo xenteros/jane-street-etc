@@ -70,7 +70,7 @@ def main():
         if response["type"] == "book":
             symbol = response["symbol"]
             print(symbol, response["buy"][:2], response["sell"][:2])
-		    BUYS[symbol] = response["buy"]
+            BUYS[symbol] = response["buy"]
             SELLS[symbol] = response["sell"]
 			
     # A common mistake people make is to call write_to_exchange() > 1
