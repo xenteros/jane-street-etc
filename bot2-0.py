@@ -17,7 +17,7 @@ import time
 team_name="CZADOWECHLOPAKI"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = False
+test_mode = True
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -81,7 +81,7 @@ def arbitrage_ADR(exchange):
     VALBZ_buy = get_price(symbol = 'VALBZ', operation = 'buy')
     VALBZ_sell = get_price(symbol = 'VALBZ', operation = 'sell')
 
-    print(VALBZ_sell)
+#    print(VALBZ_sell)
     
     if VALBZ_buy == -1 or VALE_sell == -1:
         pass
