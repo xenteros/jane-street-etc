@@ -138,7 +138,9 @@ def main():
         sell_requests[symbol['symbol']] = 0
         
     buy(exchange, 998, 50, "BOND")
+    buy(exchange, 997, 50, "BOND")
     sell(exchange, 1002, 50, "BOND")
+    sell(exchange, 1003, 50, "BOND")
     #go!
     while(True):
         response = read_from_exchange(exchange)
