@@ -10,6 +10,7 @@ from __future__ import print_function
 import sys
 import socket
 import json
+import time
 
 # ~~~~~============== CONFIGURATION  ==============~~~~~
 # replace REPLACEME with your team name!
@@ -56,23 +57,37 @@ def sell_bond(exchange, price, size, order_id):
     json.dump(obj, exchange)
     exchange.write("\n")
 
+# ~~~~~============== helpers ==============~~~~~
+
+def getId(previous_id):
+    t = time.time()
+    if t - previous_id < 1.5:
+        time.sleep(1)
+    return int(time.time())
+
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
-    ORDER_ID = 1
+    LAST_ORDER_ID = int(time.time())
     exchange = connect()
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
     # Initialize portfolio
-    i = 0
+    for symbol in hello_from_exchange["symbols"]:
+        PORTFOLIO[symbol] = symbol["position"]
+        BUYS[symbol] = []
+        SELLS[symbol] = []
+    #go!
     while(True):
         response = read_from_exchange(exchange)
         if response["type"] == "book":
             symbol = response["symbol"]
-            print(symbol, response["buy"][0], response["sell"][0])
+            print(symbol)
             BUYS[symbol] = response["buy"]
             SELLS[symbol] = response["sell"]
             print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
+            
+        #time.sleep(1)
 			
     # A common mistake people make is to call write_to_exchange() > 1
     # time for every read_from_exchange() response.
