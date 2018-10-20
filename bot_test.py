@@ -74,9 +74,9 @@ def main():
     hello_from_exchange = read_from_exchange(exchange)
     # Initialize portfolio
     for symbol in hello_from_exchange["symbols"]:
-        PORTFOLIO[symbol] = symbol["position"]
-        BUYS[symbol] = []
-        SELLS[symbol] = []
+        PORTFOLIO[symbol['symbol']] = symbol["position"]
+        BUYS[symbol['symbol']] = []
+        SELLS[symbol['symbol']] = []
     #go!
     while(True):
         response = read_from_exchange(exchange)
