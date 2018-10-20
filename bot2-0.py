@@ -126,8 +126,7 @@ def main():
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
     
-    buy(exchange, 998, 50, "BOND")
-    sell(exchange, 1002, 50, "BOND")
+    
     # Initialize portfolio
     print(hello_from_exchange)
     for symbol in hello_from_exchange["symbols"]:
@@ -137,6 +136,9 @@ def main():
         SELLS[symbol['symbol']] = []
         buy_requests[symbol['symbol']] = 0
         sell_requests[symbol['symbol']] = 0
+        
+    buy(exchange, 998, 50, "BOND")
+    sell(exchange, 1002, 50, "BOND")
     #go!
     while(True):
         response = read_from_exchange(exchange)
