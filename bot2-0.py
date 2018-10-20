@@ -129,20 +129,20 @@ def main():
     for symbol in hello_from_exchange["symbols"]:
         #print(symbol)
         PORTFOLIO[symbol['symbol']] = symbol["position"]
-        BUYS[symbol['symbol']] = []
-        SELLS[symbol['symbol']] = []
+        BUYS[symbol['symbol']] = 0
+        SELLS[symbol['symbol']] = 0
     #go!
     while(True):
         response = read_from_exchange(exchange)
         if response["type"] == "book":
             symbol = response["symbol"]
-            print(symbol)
+#           print(symbol)
             BUYS[symbol] = response["buy"]
             SELLS[symbol] = response["sell"]
-            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
+#            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
+            arbitrage_ADR(exchange)
         elif response["type"] == "fill":
-            pass
-        arbitrage_ADR(exchange)
+            print(response)
             
         #time.sleep(1)
 			
