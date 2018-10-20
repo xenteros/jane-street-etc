@@ -68,11 +68,11 @@ def main():
     while(True):
         response = read_from_exchange(exchange)
         if response["type"] == "book":
-            print(response["symbol"], response["buy"][:2], response["sell"][:2])
-            i+=1
-        if i > 10:
-            break
-
+			symbol = response["symbol"]
+            print(symbol, response["buy"][:2], response["sell"][:2])
+			BUYS[symbol] = response["buy"]
+			SELLS[symbol] = response["sell"]
+			
     # A common mistake people make is to call write_to_exchange() > 1
     # time for every read_from_exchange() response.
     # Since many write messages generate marketdata, this will cause an
