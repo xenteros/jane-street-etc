@@ -88,20 +88,24 @@ def arbitrage_ADR(exchange):
     elif VALBZ_buy > VALE_sell + 10:
         # Buy VALE
         buy(exchange, VALE_sell, 1, "VALE")
+        buy_requests["VALE"] = buy_requests["VALE"] + 1
         # Convert to VALBZ
         convert(exchange, 1, "VALBZ")
         # Sell VALBZ
         sell(exchange, VALBZ_buy, 1, "VALBZ")
+        sell_requests["VALBZ"] = sell_requests["VALBZ"] + 1
         
     if VALBZ_sell == -1 or VALE_buy == -1:
         pass
     elif VALBZ_sell + 10 < VALE_buy:
         # Buy VALBZ
         buy(exchange, VALBZ_sell, 1, "VALBZ")
+        buy_requests["VALBZ"] = buy_requests["VALBZ"] + 1
         # Convert to VALE
         convert(exchange, 1, "VALE")
         # Sell VALE
         sell(exchange, VALE_buy, 1, "VALE")
+        sell_requests["VALE"] = sell_requests["VALE"] + 1
 
 def get_price(symbol, operation):
     if operation == "buy":
