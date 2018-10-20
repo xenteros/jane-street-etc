@@ -17,7 +17,7 @@ import time
 team_name="CZADOWECHLOPAKI"
 # This variable dictates whether or not the bot is connecting to the prod
 # or test exchange. Be careful with this switch!
-test_mode = True
+test_mode = False
 
 # This setting changes which test exchange is connected to.
 # 0 is prod-like
@@ -45,10 +45,8 @@ def read_from_exchange(exchange):
 
 # ~~~~~============== OPERATIONS =============~~~~~
 PORTFOLIO = {}
-BUYS = {}   #buys from book
-SELLS = {}  #sells from book
-buy_requests = {}
-sell_requests = {}
+BUYS = {}
+SELLS = {}
 
 def buy_bond(exchange, price, size, order_id):
     obj = {"type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": price, "size": size}
@@ -64,9 +62,8 @@ def buy(exchange, price, size, symbol):
     obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "BUY", "price": price, "size": size}
     json.dump(obj, exchange)
     exchange.write("\n")
-    buy_requests[symbol] = buy_requests[symbol] + size
 
-def convert(exchange, size, symbol, operation):
+def convert(operation = "BUY", exchange, size, symbol, operation):
     obj = {"type": "convert", "order_id": getId(), "symbol": symbol, "dir": operation, "size": size}
     json.dump(obj, exchange)
     exchange.write("\n")
@@ -75,7 +72,6 @@ def sell(exchange, price, size, symbol):
     obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "SELL", "price": price, "size": size}
     json.dump(obj, exchange)
     exchange.write("\n")
-    sell_requests[symbol] = sell_requests[symbol] + size
 
 def arbitrage_ADR(exchange):
     VALE_buy = get_price(symbol = "VALE", operation = 'buy')
@@ -83,9 +79,9 @@ def arbitrage_ADR(exchange):
     VALBZ_buy = get_price(symbol = 'VALBZ', operation = 'buy')
     VALBZ_sell = get_price(symbol = 'VALBZ', operation = 'sell')
 
-#    print(VALBZ_sell)
+    print(VALBZ_sell)
     
-    if VALBZ_buy == -1 or VALE_sell == -1 or PORTFOLIO["VALE"] + buy_requests["VALE"] >= 10 or PORTFOLIO["VALBZ"] - sell_requests["VALBZ"] <= -10:
+    if VALBZ_buy == -1 or VALE_sell == -1:
         pass
     elif VALBZ_buy > VALE_sell + 10:
         # Buy VALE
@@ -95,7 +91,7 @@ def arbitrage_ADR(exchange):
         # Sell VALBZ
         sell(exchange, VALBZ_buy, 1, "VALBZ")
         
-    if VALBZ_sell == -1 or VALE_buy == -1 or PORTFOLIO["VALBZ"] + buy_requests["VALBZ"] >= 10 or PORTFOLIO["VALE"] - sell_requests["VALE"] <= -10:
+    if VALBZ_sell == -1 or VALE_buy == -1:
         pass
     elif VALBZ_sell + 10 < VALE_buy:
         # Buy VALBZ
@@ -104,7 +100,7 @@ def arbitrage_ADR(exchange):
         convert(exchange, 1, "VALE", "BUY")
         # Sell VALE
         sell(exchange, VALE_buy, 1, "VALE")
-
+        
 def arbitrage_XLF(exchange):
     XLF_buy = get_price(symbol = "XLF", operation = 'buy')[0][0]
     XLF_sell = get_price(symbol = "XLF", operation = 'sell')[0][0]
@@ -137,6 +133,18 @@ def arbitrage_XLF(exchange):
         sell(exchange, BOND_sell, 3, "MS")
         sell(exchange, BOND_sell, 2, "WFC")
 
+        
+        
+        
+    
+    
+    
+
+    
+                    
+    
+    
+
 def get_price(symbol, operation):
     if operation == "buy":
         return BUYS[symbol][0][0] if BUYS[symbol] else -1
@@ -158,7 +166,8 @@ def main():
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
     
-    
+    buy(exchange, 999, 50, "BOND")
+    sell(exchange, 1001, 50, "BOND")
     # Initialize portfolio
     print(hello_from_exchange)
     for symbol in hello_from_exchange["symbols"]:
@@ -166,43 +175,18 @@ def main():
         PORTFOLIO[symbol['symbol']] = symbol["position"]
         BUYS[symbol['symbol']] = []
         SELLS[symbol['symbol']] = []
-        buy_requests[symbol['symbol']] = 0
-        sell_requests[symbol['symbol']] = 0
-        
-    buy(exchange, 999, 40, "BOND")
-    buy(exchange, 998, 40, "BOND")
-    buy(exchange, 997, 20, "BOND")
-    sell(exchange, 1001, 40, "BOND")
-    sell(exchange, 1002, 40, "BOND")
-    sell(exchange, 1003, 20, "BOND")
     #go!
     while(True):
         response = read_from_exchange(exchange)
         if response["type"] == "book":
             symbol = response["symbol"]
-#           print(symbol)
+            print(symbol)
             BUYS[symbol] = response["buy"]
             SELLS[symbol] = response["sell"]
-#            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
-            arbitrage_ADR(exchange)
-            arbitrage_XLF(exchange)
+            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
         elif response["type"] == "fill":
-            print("RESPONSE: ", response)
-            print("PORTFOLIO:",PORTFOLIO)
-            print("BUYS:     ", buy_requests)
-            print("SELL:     ", sell_requests)
-            symbol = response["symbol"]
-            dir = response["dir"]
-            size = response["size"]
-            print("SOLD:     ", symbol, size)
-            if dir == "BUY":
-                pass
-                buy_requests[symbol] = buy_requests[symbol] - size
-                PORTFOLIO[symbol] = PORTFOLIO[symbol] + size
-            else:
-                pass
-                sell_requests[symbol] = sell_requests[symbol] - size
-                PORTFOLIO[symbol] = PORTFOLIO[symbol] - size
+            pass
+        arbitrage_ADR(exchange)
             
         #time.sleep(1)
 			
