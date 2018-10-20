@@ -25,6 +25,7 @@ test_mode = True
 # 2 is empty
 test_exchange_index=0
 prod_exchange_hostname="production"
+LAST_ORDER_ID = int(time.time())
 
 port=25000 + (test_exchange_index if test_mode else 0)
 exchange_hostname = "test-exch-" + team_name if test_mode else prod_exchange_hostname
@@ -57,21 +58,70 @@ def sell_bond(exchange, price, size, order_id):
     json.dump(obj, exchange)
     exchange.write("\n")
 
+def buy(exchange, price, size, symbol):
+    obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "BUY", "price": price, "size": size}
+    json.dump(obj, exchange)
+    exchange.write("\n")
+
+def convert(exchange, size, symbol):
+    obj = {"type": "convert", "order_id": getId(), "symbol": symbol, "dir": "BUY", "size": size}
+    json.dump(obj, exchange)
+    exchange.write("\n")
+
+def sell(exchange, price, size, symbol):
+    obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "SELL", "price": price, "size": size}
+    json.dump(obj, exchange)
+    exchange.write("\n")
+
+def arbitrage_ADR(exchange):
+    VALE_buy = get_price(symbol = "VALE", operation = 'buy')
+    VALE_sell = get_price(symbol = "VALE", operation = 'sell')
+    VALBZ_buy = get_price(symbol = 'VALBZ', operation = 'buy')
+    VALBZ_sell = get_price(symbol = 'VALBZ', operation = 'sell')
+    
+    if VALBZ_buy == -1 or VALE_sell == -1:
+        pass
+    elif VALBZ_buy > VALE_sell + 10:
+        # Buy VALE
+        buy(exchange, VALE_sell, 1, "VALE")
+        # Convert to VALBZ
+        convert(exchange, 1, "VALBZ")
+        # Sell VALBZ
+        sell(exchange, VALBZ_buy, 1, "VALBZ")
+        
+    if VALBZ_sell == -1 or VALE_buy == -1:
+        pass
+    elif VALBZ_sell + 10 < VALE_buy:
+        # Buy VALBZ
+        buy(exchange, VALBZ_sell, 1, "VALBZ")
+        # Convert to VALE
+        convert(exchange, 1, "VALE")
+        # Sell VALE
+        sell(exchange, VALE_buy, 1, "VALE")
+
+def get_price(symbol, operation):
+    if operation == "buy":
+        return BUYS[symbol][0] if BUYS[symbol] else -1
+    if operation == "sell":
+        return SELLS[symbol][0] if SELLS[symbol] else -1
+    return -1
 # ~~~~~============== helpers ==============~~~~~
 
-def getId(previous_id):
+def getId():
     t = time.time()
-    if t - previous_id < 1.5:
+    if t - LAST_ORDER_ID < 1.5:
         time.sleep(1)
     return int(time.time())
 
 # ~~~~~============== MAIN LOOP ==============~~~~~
 
 def main():
-    LAST_ORDER_ID = int(time.time())
     exchange = connect()
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
+    
+    buy(exchange, 999, 50, "BOND")
+    sell(exchange, 1001, 50, "BOND")
     # Initialize portfolio
     for symbol in hello_from_exchange["symbols"]:
         PORTFOLIO[symbol] = symbol["position"]
@@ -86,6 +136,7 @@ def main():
             BUYS[symbol] = response["buy"]
             SELLS[symbol] = response["sell"]
             print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
+        arbitrage_ADR(exchange)
             
         #time.sleep(1)
 			
