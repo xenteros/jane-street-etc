@@ -45,8 +45,10 @@ def read_from_exchange(exchange):
 
 # ~~~~~============== OPERATIONS =============~~~~~
 PORTFOLIO = {}
-BUYS = {}
-SELLS = {}
+BUYS = {}   #buys from book
+SELLS = {}  #sells from book
+buy_requests = {}
+sell_requests = {}
 
 def buy_bond(exchange, price, size, order_id):
     obj = {"type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": price, "size": size}
@@ -129,8 +131,8 @@ def main():
     for symbol in hello_from_exchange["symbols"]:
         #print(symbol)
         PORTFOLIO[symbol['symbol']] = symbol["position"]
-        BUYS[symbol['symbol']] = 0
-        SELLS[symbol['symbol']] = 0
+        BUYS[symbol['symbol']] = []
+        SELLS[symbol['symbol']] = []
     #go!
     while(True):
         response = read_from_exchange(exchange)
