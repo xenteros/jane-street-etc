@@ -68,10 +68,10 @@ def main():
     while(True):
         response = read_from_exchange(exchange)
         if response["type"] == "book":
-			symbol = response["symbol"]
+            symbol = response["symbol"]
             print(symbol, response["buy"][:2], response["sell"][:2])
-			BUYS[symbol] = response["buy"]
-			SELLS[symbol] = response["sell"]
+		    BUYS[symbol] = response["buy"]
+            SELLS[symbol] = response["sell"]
 			
     # A common mistake people make is to call write_to_exchange() > 1
     # time for every read_from_exchange() response.
