@@ -145,6 +145,18 @@ def main():
             arbitrage_ADR(exchange)
         elif response["type"] == "fill":
             print(response)
+            print(PORTFOLIO)
+            symbol = response["symbol"]
+            dir = response["dir"]
+            size = response["size"]
+            if dir == "BUY":
+                pass
+                buy_requests[symbol] = buy_requests[symbol] - size
+                PORTFOLIO[symbol] = PORTFOLIO[symbol] + size
+            else:
+                pass
+                sell_requests[symbol] = sell_requests[symbol] - size
+                PORTFOLIO[symbol] = PORTFOLIO[symbol] - size
             
         #time.sleep(1)
 			
