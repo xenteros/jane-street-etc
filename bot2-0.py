@@ -64,6 +64,7 @@ def buy(exchange, price, size, symbol):
     obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "BUY", "price": price, "size": size}
     json.dump(obj, exchange)
     exchange.write("\n")
+    buy_requests[symbol] = buy_requests[symbol] + size
 
 def convert(exchange, size, symbol):
     obj = {"type": "convert", "order_id": getId(), "symbol": symbol, "dir": "BUY", "size": size}
@@ -74,6 +75,7 @@ def sell(exchange, price, size, symbol):
     obj = {"type": "add", "order_id": getId(), "symbol": symbol, "dir": "SELL", "price": price, "size": size}
     json.dump(obj, exchange)
     exchange.write("\n")
+    sell_requests[symbol] = sell_requests[symbol] + size
 
 def arbitrage_ADR(exchange):
     VALE_buy = get_price(symbol = "VALE", operation = 'buy')
@@ -88,24 +90,20 @@ def arbitrage_ADR(exchange):
     elif VALBZ_buy > VALE_sell + 10:
         # Buy VALE
         buy(exchange, VALE_sell, 1, "VALE")
-        buy_requests["VALE"] = buy_requests["VALE"] + 1
         # Convert to VALBZ
         convert(exchange, 1, "VALBZ")
         # Sell VALBZ
         sell(exchange, VALBZ_buy, 1, "VALBZ")
-        sell_requests["VALBZ"] = sell_requests["VALBZ"] + 1
         
     if VALBZ_sell == -1 or VALE_buy == -1 or PORTFOLIO["VALBZ"] + buy_requests["VALBZ"] >= 10 or PORTFOLIO["VALE"] - sell_requests["VALE"] <= -10:
         pass
     elif VALBZ_sell + 10 < VALE_buy:
         # Buy VALBZ
         buy(exchange, VALBZ_sell, 1, "VALBZ")
-        buy_requests["VALBZ"] = buy_requests["VALBZ"] + 1
         # Convert to VALE
         convert(exchange, 1, "VALE")
         # Sell VALE
         sell(exchange, VALE_buy, 1, "VALE")
-        sell_requests["VALE"] = sell_requests["VALE"] + 1
 
 def get_price(symbol, operation):
     if operation == "buy":
@@ -128,8 +126,8 @@ def main():
     write_to_exchange(exchange, {"type": "hello", "team": team_name.upper()})
     hello_from_exchange = read_from_exchange(exchange)
     
-    buy(exchange, 999, 50, "BOND")
-    sell(exchange, 1001, 50, "BOND")
+    buy(exchange, 998, 50, "BOND")
+    sell(exchange, 1002, 50, "BOND")
     # Initialize portfolio
     print(hello_from_exchange)
     for symbol in hello_from_exchange["symbols"]:
@@ -152,6 +150,8 @@ def main():
         elif response["type"] == "fill":
             print("RESPONSE: ", response)
             print("PORTFOLIO:",PORTFOLIO)
+            print("BUYS:     ", buy_requests)
+            print("SELL:     ", sell_requests)
             symbol = response["symbol"]
             dir = response["dir"]
             size = response["size"]
