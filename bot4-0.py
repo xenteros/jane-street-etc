@@ -145,10 +145,10 @@ def arbitrage_XLF(exchange):
         pass
     elif XLF_sell + 2 < 3/10*BOND_buy + 2/10*GS_buy + 3/10*MS_buy+ 2/10*WFC_buy:
         buy(exchange, XLF_sell, 10, "XLF")
-        sell(exchange, BOND_sell, 3, "BOND")
-        sell(exchange, GS_sell, 2, "GS")
-        sell(exchange, MS_sell, 3, "MS")
-        sell(exchange, WFC_sell, 2, "WFC")
+        sell(exchange, BOND_buy, 3, "BOND")
+        sell(exchange, GS_buy, 2, "GS")
+        sell(exchange, MS_buy, 3, "MS")
+        sell(exchange, WFC_buy, 2, "WFC")
         
 def get_price(symbol, operation):
     if operation == "buy":
