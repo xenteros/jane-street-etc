@@ -78,6 +78,8 @@ def arbitrage_ADR(exchange):
     VALE_sell = get_price(symbol = "VALE", operation = 'sell')
     VALBZ_buy = get_price(symbol = 'VALBZ', operation = 'buy')
     VALBZ_sell = get_price(symbol = 'VALBZ', operation = 'sell')
+
+    print(VALBZ_sell)
     
     if VALBZ_buy == -1 or VALE_sell == -1:
         pass
@@ -101,9 +103,9 @@ def arbitrage_ADR(exchange):
 
 def get_price(symbol, operation):
     if operation == "buy":
-        return BUYS[symbol][0] if BUYS[symbol] else -1
+        return BUYS[symbol][0][0] if BUYS[symbol] else -1
     if operation == "sell":
-        return SELLS[symbol][0] if SELLS[symbol] else -1
+        return SELLS[symbol][0][0] if SELLS[symbol] else -1
     return -1
 # ~~~~~============== helpers ==============~~~~~
 
