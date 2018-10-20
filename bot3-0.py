@@ -50,6 +50,16 @@ SELLS = {}  #sells from book
 buy_requests = {}
 sell_requests = {}
 
+def earn_on_bonds():
+    bonds = portfolio["BOND"] + buy_requests["BONDS"]
+    if bonds < 100:
+        buy(exchange, 999, 100-bonds, "BOND")
+    
+    bonds = portfolio["BOND"] - sell_requests["BONDS"]
+    if bonds > -100:
+        sell(exchange, 1001, 100+bonds, "BOND")
+
+
 def buy_bond(exchange, price, size, order_id):
     obj = {"type": "add", "order_id": order_id, "symbol": "BOND", "dir": "BUY", "price": price, "size": size}
     json.dump(obj, exchange)
@@ -153,6 +163,7 @@ def main():
             SELLS[symbol] = response["sell"]
 #            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
             arbitrage_ADR(exchange)
+            earn_on_bonds()
         elif response["type"] == "fill":
             print("RESPONSE: ", response)
             print("PORTFOLIO:",PORTFOLIO)
