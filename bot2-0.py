@@ -137,6 +137,8 @@ def main():
         PORTFOLIO[symbol['symbol']] = symbol["position"]
         BUYS[symbol['symbol']] = []
         SELLS[symbol['symbol']] = []
+        buy_requests[symbol['symbol']] = 0
+        sell_requests[symbol['symbol']] = 0
     #go!
     while(True):
         response = read_from_exchange(exchange)
