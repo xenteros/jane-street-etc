@@ -83,7 +83,7 @@ def arbitrage_ADR(exchange):
 
 #    print(VALBZ_sell)
     
-    if VALBZ_buy == -1 or VALE_sell == -1:
+    if VALBZ_buy == -1 or VALE_sell == -1 or PORTFOLIO["VALE"] + buy_requests["VALE"] >= 10 or PORTFOLIO["VALBZ"] - sell_requests["VALBZ"] <= -10:
         pass
     elif VALBZ_buy > VALE_sell + 10:
         # Buy VALE
@@ -95,7 +95,7 @@ def arbitrage_ADR(exchange):
         sell(exchange, VALBZ_buy, 1, "VALBZ")
         sell_requests["VALBZ"] = sell_requests["VALBZ"] + 1
         
-    if VALBZ_sell == -1 or VALE_buy == -1:
+    if VALBZ_sell == -1 or VALE_buy == -1 or PORTFOLIO["VALBZ"] + buy_requests["VALBZ"] >= 10 or PORTFOLIO["VALE"] - sell_requests["VALE"] <= -10:
         pass
     elif VALBZ_sell + 10 < VALE_buy:
         # Buy VALBZ
