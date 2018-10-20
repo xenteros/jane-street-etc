@@ -150,8 +150,8 @@ def main():
 #            print(symbol, len(BUYS[symbol]), len(SELLS[symbol]))
             arbitrage_ADR(exchange)
         elif response["type"] == "fill":
-            print(response)
-            print(PORTFOLIO)
+            print("RESPONSE: ", response)
+            print("PORTFOLIO:",PORTFOLIO)
             symbol = response["symbol"]
             dir = response["dir"]
             size = response["size"]
