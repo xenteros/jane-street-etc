@@ -171,8 +171,10 @@ def main():
                 sell_requests[symbol] = sell_requests[symbol] - size
                 PORTFOLIO[symbol] = PORTFOLIO[symbol] - size
             if PORTFOLIO["VALE"] == 10:
+                print("CONVERT VALBZ")
                 convert(exchange, 10, "VALBZ")
             if PORTFOLIO["VALBZ"] == 10:
+                print("CONVERT VALE")
                 convert(exchange, 10, "VALE")
             
         #time.sleep(1)
